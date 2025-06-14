@@ -10,6 +10,7 @@ struct MainMapView: View {
     ))
     @State private var recommendedPlaces: [RecommendedPlace] = []
     @State private var selectedPlace: RecommendedPlace?
+    @State private var isSheetPresented = true
 
     var body: some View {
         ZStack {
@@ -42,10 +43,13 @@ struct MainMapView: View {
             }
             .ignoresSafeArea()
         }
-        .sheet(isPresented: .constant(true)) {
+        .sheet(isPresented: $isSheetPresented) {
             RecommendedPlacesSheet(
                 recommendedPlaces: recommendedPlaces,
-                selectPlace: { place in selectedPlace = place },
+                selectPlace: { place in
+                    isSheetPresented = false
+                    selectedPlace = place
+                },
                 updateAction: {
                     let centerCoordinate: CLLocationCoordinate2D
                     if let loc = locationManager.location {
@@ -58,12 +62,19 @@ struct MainMapView: View {
                     }
                 }
             )
-            .presentationDetents([.fraction(0.12), .fraction(0.32), .fraction(0.7)])
-            .interactiveDismissDisabled()
+            .presentationDetents([.fraction(0.3), .fraction(0.8)])
         }
-        // selectedPlaceをバインディングした.sheetを追加し、詳細ビューを表示する
         .sheet(item: $selectedPlace) { place in
             RecommendedPlaceDetailView(place: place)
+        }
+        .toolbar {
+            ToolbarItem(placement: .bottomBar) {
+                Button {
+                    isSheetPresented = true
+                } label: {
+                    Label("Show Places List", systemImage: "list.bullet")
+                }
+            }
         }
     }
 }
