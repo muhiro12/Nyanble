@@ -183,6 +183,56 @@
     },
     "緯度: %lf" : {
 
+    },
+    "Check weather for ${date}" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${date}の天気を確認"
+          }
+        }
+      }
+    },
+    "Check Weather" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "天気を確認"
+          }
+        }
+      }
+    },
+    "Date" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日付"
+          }
+        }
+      }
+    },
+    "Enter date" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日付を選択してください"
+          }
+        }
+      }
+    },
+    "Here is the forecast." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "天気予報はこちらです。"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"
