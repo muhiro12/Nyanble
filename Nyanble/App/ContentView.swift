@@ -5,9 +5,9 @@
 //  Created by Hiromu Nakano on 2025/06/14.
 //
 
-import SwiftUI
-import SwiftData
 import MapKit
+import SwiftData
+import SwiftUI
 
 struct ContentView: View {
     @State private var nearbyPlaces: [RecommendedPlace] = []
@@ -38,7 +38,7 @@ struct ContentView: View {
                         selectedScreen = 1
                     } label: {
                         Image(systemName: "list.bullet")
-                            .foregroundColor(selectedScreen == 2 ? .accentColor : .primary)
+                            .foregroundColor(selectedScreen == 1 ? .accentColor : .primary)
                     }
                 }
             }
