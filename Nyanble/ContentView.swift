@@ -11,6 +11,8 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
+    @State private var showNearbyPlaces = false
+    @State private var nearbyPlaces: [RecommendedPlace] = []
 
     var body: some View {
         NavigationSplitView {
@@ -38,9 +40,22 @@ struct ContentView: View {
                         Label("Add Item", systemImage: "plus")
                     }
                 }
+                ToolbarItem {
+                    Button("Nearby Places") {
+                        do {
+                            nearbyPlaces = try NearbyRecommendationsIntent.perform(())
+                            showNearbyPlaces = true
+                        } catch {
+                            print("Failed to get recommendations: \(error)")
+                        }
+                    }
+                }
             }
         } detail: {
             Text("Select an item")
+        }
+        .sheet(isPresented: $showNearbyPlaces) {
+            RecommendedPlacesView(places: nearbyPlaces)
         }
     }
 
