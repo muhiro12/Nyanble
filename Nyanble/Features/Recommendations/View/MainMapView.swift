@@ -87,7 +87,8 @@ struct MainMapView: View {
 extension MainMapView {
     func fetchRecommendedPlaces(for coordinate: CLLocationCoordinate2D) async {
         do {
-            let results = try await RecommendationsIntent.perform((latitude: coordinate.latitude, longitude: coordinate.longitude))
+            let query = RecommendationsIntentInput(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            let results = try await RecommendationsIntent.perform(query)
             recommendedPlaces = results
         } catch {
             print("Intentによるおすすめ場所取得に失敗: \(error)")

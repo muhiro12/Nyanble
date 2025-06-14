@@ -10,32 +10,54 @@ import CoreLocation
 import FoundationModels
 
 struct RecommendationsIntent: AppIntent, IntentPerformer {
-    typealias Input = (latitude: Double, longitude: Double)
+    typealias Input = RecommendationsIntentInput
     typealias Output = [RecommendedPlace]
 
     @Parameter(
         title: "Latitude",
         requestValueDialog: "Enter latitude"
     )
-    var latitude: Double
+    var latitude: Double?
 
     @Parameter(
         title: "Longitude",
         requestValueDialog: "Enter longitude"
     )
-    var longitude: Double
+    var longitude: Double?
+
+    @Parameter(
+        title: "Location Name",
+        requestValueDialog: "Enter location name"
+    )
+    var name: String?
 
     static let title: LocalizedStringResource = "Show Recommendations For Location"
     static let supportedModes: IntentModes = .foreground
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Show recommendations for \(\.$latitude), \(\.$longitude)")
+        Summary("Show recommendations")
     }
 
     static func perform(_ input: Input) async throws -> Output {
+        guard !input.isEmpty else { throw RecommendationsError.missingInput }
+
         let session = LanguageModelSession()
+
+        var conditions: [String] = []
+        if let name = input.name {
+            conditions.append("around \(name)")
+        }
+        if let lat = input.latitude, let lon = input.longitude {
+            conditions.append("near latitude \(lat), longitude \(lon)")
+        } else if let lat = input.latitude {
+            conditions.append("near latitude \(lat)")
+        } else if let lon = input.longitude {
+            conditions.append("near longitude \(lon)")
+        }
+
+        let conditionText = conditions.joined(separator: " ")
         let prompt = """
-        Suggest three interesting places near latitude \(input.latitude), longitude \(input.longitude) for today's outing. For each, provide a short name and description.
+        Suggest three interesting places \(conditionText) for today's outing. For each, provide a short name and description.
         """
         let response = try await session.respond(
             to: prompt,
@@ -53,7 +75,7 @@ struct RecommendationsIntent: AppIntent, IntentPerformer {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        let results = try await Self.perform((latitude, longitude))
+        let results = try await Self.perform(RecommendationsIntentInput(latitude: latitude, longitude: longitude, name: name))
         return .result(
             value: results,
             dialog: "Here are some places near that location."
