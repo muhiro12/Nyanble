@@ -1,44 +1,7 @@
+import AppIntents
 import Foundation
 import SwiftUI
-import AppIntents
 import FoundationModels
-
-protocol IntentPerformer {
-    associatedtype Input
-    associatedtype Output
-    static func perform(_ input: Input) async throws -> Output
-}
-
-struct RecommendedPlace: Identifiable, Hashable {
-    let id = UUID()
-    let name: String
-    let detail: String
-}
-
-@Generable
-struct AIRecommendedPlace {
-    var name: String
-    var detail: String
-}
-
-@Generable
-struct AIRecommendations {
-    @Guide(description: "A list of recommended nearby places", .count(3))
-    var places: [AIRecommendedPlace]
-}
-
-struct RecommendedPlacesView: View {
-    let places: [RecommendedPlace]
-
-    var body: some View {
-        List(places) { place in
-            VStack(alignment: .leading) {
-                Text(place.name).bold()
-                Text(place.detail).font(.caption).foregroundColor(.secondary)
-            }
-        }
-    }
-}
 
 struct NearbyRecommendationsIntent: AppIntent, IntentPerformer {
     typealias Input = Void
