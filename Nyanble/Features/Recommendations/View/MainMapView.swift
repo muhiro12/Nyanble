@@ -75,6 +75,13 @@ struct MainMapView: View {
                     Label("Show Places List", systemImage: "list.bullet")
                 }
             }
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button {
+                    locationManager.requestLocation()
+                } label: {
+                    Label("Update Location", systemImage: "location")
+                }
+            }
         }
     }
 }
