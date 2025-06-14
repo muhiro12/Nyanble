@@ -12,6 +12,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
     @State private var showNearbyPlaces = false
+    @State private var isLoadingNearbyPlaces = false
     @State private var nearbyPlaces: [RecommendedPlace] = []
 
     var body: some View {
@@ -41,14 +42,23 @@ struct ContentView: View {
                     }
                 }
                 ToolbarItem {
-                    Button("Nearby Places") {
-                        Task {
-                            do {
-                                nearbyPlaces = try await NearbyRecommendationsIntent.perform(())
-                                showNearbyPlaces = true
-                            } catch {
-                                print("Failed to get recommendations: \(error)")
+                    HStack {
+                        Button("Nearby Places") {
+                            Task {
+                                isLoadingNearbyPlaces = true
+                                defer { isLoadingNearbyPlaces = false }
+                                do {
+                                    nearbyPlaces = try await NearbyRecommendationsIntent.perform(())
+                                    showNearbyPlaces = true
+                                } catch {
+                                    print("Failed to get recommendations: \(error)")
+                                }
                             }
+                        }
+                        .disabled(isLoadingNearbyPlaces)
+                        if isLoadingNearbyPlaces {
+                            ProgressView()
+                                .scaleEffect(0.7)
                         }
                     }
                 }
