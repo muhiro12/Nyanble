@@ -18,7 +18,10 @@ struct NearbyRecommendationsIntent: AppIntent, IntentPerformer {
 
     static func perform(_ input: Input) async throws -> Output {
         let location = await LocationManager().fetchCurrentLocation()
-        return try await RecommendationsIntent.perform((latitude: location.coordinate.latitude, longitude: location.coordinate.longitude))
+        return try await RecommendationsIntent.perform(
+            RecommendationsIntentInput(latitude: location.coordinate.latitude,
+                                longitude: location.coordinate.longitude)
+        )
     }
 
     @MainActor
