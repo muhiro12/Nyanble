@@ -55,9 +55,10 @@ struct RecommendationsIntent: AppIntent, IntentPerformer {
             conditions.append("near longitude \(lon)")
         }
 
+        let language = Locale.current.localizedString(forLanguageCode: Locale.current.language.languageCode?.identifier ?? "en") ?? "English"
         let conditionText = conditions.joined(separator: " ")
         let prompt = """
-        Suggest three interesting places \(conditionText) for today's outing. For each, provide a short name and description.
+        Suggest three interesting places \(conditionText) for today's outing. For each, provide a short name, a short description, and the accurate latitude and longitude (as real, searchable locations in the world). Respond in \(language).
         """
         let response = try await session.respond(
             to: prompt,
@@ -82,3 +83,4 @@ struct RecommendationsIntent: AppIntent, IntentPerformer {
         )
     }
 }
+

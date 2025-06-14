@@ -83,6 +83,9 @@
         }
       }
     },
+    "latitude:" : {
+
+    },
     "Location Name" : {
       "localizations" : {
         "ja" : {
@@ -102,6 +105,9 @@
           }
         }
       }
+    },
+    "longitude:" : {
+
     },
     "Recommended Place" : {
       "localizations" : {
