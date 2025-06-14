@@ -17,62 +17,79 @@ struct ContentView: View {
     @State private var nearbyPlaces: [RecommendedPlace] = []
     @State private var selectedPlace: RecommendedPlace?
     @State private var showPlaceDetail = false
+    @State private var selectedScreen: Int = 0 // 0: メインマップ, 1: おすすめ場所マップ, 2: リスト
 
     var body: some View {
         NavigationView {
-            VStack {
-                Map(position: $cameraPosition) {
-                    UserAnnotation()
-                    ForEach(nearbyPlaces) { place in
-                        Annotation(place.name, coordinate: CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude)) {
-                            Button {
-                                selectedPlace = place
-                                showPlaceDetail = true
-                            } label: {
-                                Image(systemName: "mappin.circle.fill")
-                                    .font(.title)
-                                    .foregroundColor(.red)
-                                    .shadow(radius: 3)
+            Group {
+                switch selectedScreen {
+                case 0:
+                    MainMapView()
+                case 1:
+                    VStack {
+                        Map(position: $cameraPosition) {
+                            UserAnnotation()
+                            ForEach(nearbyPlaces) { place in
+                                Annotation(place.name, coordinate: CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude)) {
+                                    Button {
+                                        selectedPlace = place
+                                        showPlaceDetail = true
+                                    } label: {
+                                        Image(systemName: "mappin.circle.fill")
+                                            .font(.title)
+                                            .foregroundColor(.red)
+                                            .shadow(radius: 3)
+                                    }
+                                }
                             }
+                        }
+                        .edgesIgnoringSafeArea(.all)
+                    }
+                case 2:
+                    RecommendedPlacesView(places: nearbyPlaces)
+                default:
+                    MainMapView()
+                }
+            }
+            .navigationTitle(screenTitle())
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    Button {
+                        selectedScreen = 0
+                    } label: {
+                        Image(systemName: "globe")
+                            .foregroundColor(selectedScreen == 0 ? .accentColor : .primary)
+                    }
+                    Button {
+                        selectedScreen = 1
+                    } label: {
+                        Image(systemName: "map")
+                            .foregroundColor(selectedScreen == 1 ? .accentColor : .primary)
+                    }
+                    Button {
+                        selectedScreen = 2
+                    } label: {
+                        Image(systemName: "list.bullet")
+                            .foregroundColor(selectedScreen == 2 ? .accentColor : .primary)
+                    }
+                }
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    if selectedScreen == 0 {
+                        Button {
+                            locationManager.requestLocation()
+                        } label: {
+                            Label("現在地更新", systemImage: "location")
+                        }
+                    } else if selectedScreen == 1 {
+                        Button {
+                            Task {
+                                await reloadNearbyPlaces()
+                            }
+                        } label: {
+                            Label("リロード", systemImage: "arrow.clockwise")
                         }
                     }
                 }
-                .edgesIgnoringSafeArea(.all)
-            }
-            .navigationTitle("Nearby Places Map")
-            .task {
-                locationManager.requestLocation()
-                isLoadingNearbyPlaces = true
-                defer { isLoadingNearbyPlaces = false }
-                do {
-                    // Wait briefly for location update
-                    try await Task.sleep(nanoseconds: 1_000_000_000)
-                    var region: MKCoordinateRegion
-                    if let userLocation = locationManager.location?.coordinate {
-                        region = MKCoordinateRegion(center: userLocation, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
-                        cameraPosition = .region(region)
-                    } else if let currentRegion = cameraPosition.region {
-                        region = currentRegion
-                    } else {
-                        // fallback
-                        region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 35.681236, longitude: 139.767125), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
-                    }
-                    let results = try await NearbyRecommendationsIntent.perform(())
-                    nearbyPlaces = results.map { recommended in
-                        RecommendedPlace(
-                            name: recommended.name,
-                            detail: recommended.detail,
-                            latitude: recommended.latitude,
-                            longitude: recommended.longitude
-                        )
-                    }
-                } catch {
-                    print("Failed to get recommendations: \(error)")
-                }
-            }
-            .sheet(isPresented: Binding.constant(!nearbyPlaces.isEmpty)) {
-                RecommendedPlacesView(places: nearbyPlaces)
-                    .presentationDetents([.medium, .large])
             }
             .sheet(isPresented: $showPlaceDetail) {
                 if let place = selectedPlace {
@@ -82,6 +99,49 @@ struct ContentView: View {
                     })
                 }
             }
+            .task {
+                if selectedScreen == 1 {
+                    await reloadNearbyPlaces()
+                }
+            }
+        }
+    }
+
+    private func screenTitle() -> String {
+        switch selectedScreen {
+        case 0: return "メインマップ"
+        case 1: return "おすすめ場所マップ"
+        case 2: return "おすすめリスト"
+        default: return "Nyanble"
+        }
+    }
+
+    private func reloadNearbyPlaces() async {
+        isLoadingNearbyPlaces = true
+        defer { isLoadingNearbyPlaces = false }
+        do {
+            locationManager.requestLocation()
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            var region: MKCoordinateRegion
+            if let userLocation = locationManager.location?.coordinate {
+                region = MKCoordinateRegion(center: userLocation, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+                cameraPosition = .region(region)
+            } else if let currentRegion = cameraPosition.region {
+                region = currentRegion
+            } else {
+                region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 35.681236, longitude: 139.767125), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+            }
+            let results = try await NearbyRecommendationsIntent.perform(())
+            nearbyPlaces = results.map { recommended in
+                RecommendedPlace(
+                    name: recommended.name,
+                    detail: recommended.detail,
+                    latitude: recommended.latitude,
+                    longitude: recommended.longitude
+                )
+            }
+        } catch {
+            print("Failed to get recommendations: \(error)")
         }
     }
 
