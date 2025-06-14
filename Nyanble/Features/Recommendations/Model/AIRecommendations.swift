@@ -1,4 +1,5 @@
 import Foundation
+import FoundationModels
 
 @Generable
 struct AIRecommendations {
