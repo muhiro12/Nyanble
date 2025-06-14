@@ -48,7 +48,6 @@ struct MainMapView: View {
                 ))
                 await fetchRecommendedPlaces(for: centerCoordinate)
             }
-            .ignoresSafeArea()
             .onMapCameraChange { context in
                 if let span = cameraPosition.region?.span {
                     let region = MKCoordinateRegion(center: context.camera.centerCoordinate, span: span)
