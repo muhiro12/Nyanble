@@ -28,18 +28,19 @@ struct MainMapView: View {
                     }
                 }
             }
-            .task {
-                let centerCoordinate: CLLocationCoordinate2D
-                if let loc = locationManager.location {
-                    centerCoordinate = loc.coordinate
-                } else {
-                    centerCoordinate = CLLocationCoordinate2D(latitude: 35.681236, longitude: 139.767125)
-                }
+            .onChange(of: locationManager.location) { oldLocation, newLocation in
+                guard let loc = newLocation else { return }
+                let centerCoordinate = loc.coordinate
                 cameraPosition = .region(MKCoordinateRegion(
                     center: centerCoordinate,
                     span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
                 ))
-                await fetchRecommendedPlaces(for: centerCoordinate)
+                Task {
+                    await fetchRecommendedPlaces(for: centerCoordinate)
+                }
+            }
+            .task {
+                locationManager.requestLocation()
             }
             .ignoresSafeArea()
         }
@@ -51,14 +52,11 @@ struct MainMapView: View {
                     selectedPlace = place
                 },
                 updateAction: {
-                    let centerCoordinate: CLLocationCoordinate2D
-                    if let loc = locationManager.location {
-                        centerCoordinate = loc.coordinate
-                    } else {
-                        centerCoordinate = CLLocationCoordinate2D(latitude: 35.681236, longitude: 139.767125)
-                    }
                     Task {
-                        await fetchRecommendedPlaces(for: centerCoordinate)
+                        guard let coordinate = cameraPosition.region?.center else {
+                            return
+                        }
+                        await fetchRecommendedPlaces(for: coordinate)
                     }
                 }
             )

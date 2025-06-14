@@ -45,8 +45,8 @@ struct RecommendationsIntent: AppIntent, IntentPerformer {
             RecommendedPlace(
                 name: $0.name,
                 detail: $0.detail,
-                latitude: input.latitude + Double.random(in: -0.005...0.005),
-                longitude: input.longitude + Double.random(in: -0.005...0.005)
+                latitude: $0.latitude,
+                longitude: $0.longitude
             )
         }
     }
