@@ -101,6 +101,12 @@
 
 ---
 
+## 10. Coding Style Guidelines
+
+- 1 クラス 1 ファイル（1 public type = 1 ファイル）
+
+---
+
 > **Next Action**  
 > - スキーマ定義と Intent 詳細のコード化  
 > - プロンプトの実機チューニング  
