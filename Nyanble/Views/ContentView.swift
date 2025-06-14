@@ -7,81 +7,121 @@
 
 import SwiftUI
 import SwiftData
+import MapKit
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-    @State private var showNearbyPlaces = false
+    @StateObject private var locationManager = LocationManager()
+    @State private var cameraPosition: MapCameraPosition = .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 35.681236, longitude: 139.767125), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))
     @State private var isLoadingNearbyPlaces = false
     @State private var nearbyPlaces: [RecommendedPlace] = []
+    @State private var selectedPlace: RecommendedPlace?
+    @State private var showPlaceDetail = false
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-                ToolbarItem {
-                    HStack {
-                        Button("Nearby Places") {
-                            Task {
-                                isLoadingNearbyPlaces = true
-                                defer { isLoadingNearbyPlaces = false }
-                                do {
-                                    nearbyPlaces = try await NearbyRecommendationsIntent.perform(())
-                                    showNearbyPlaces = true
-                                } catch {
-                                    print("Failed to get recommendations: \(error)")
-                                }
+        NavigationView {
+            VStack {
+                Map(position: $cameraPosition) {
+                    UserAnnotation()
+                    ForEach(nearbyPlaces) { place in
+                        Annotation(place.name, coordinate: CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude)) {
+                            Button {
+                                selectedPlace = place
+                                showPlaceDetail = true
+                            } label: {
+                                Image(systemName: "mappin.circle.fill")
+                                    .font(.title)
+                                    .foregroundColor(.red)
+                                    .shadow(radius: 3)
                             }
                         }
-                        .disabled(isLoadingNearbyPlaces)
-                        if isLoadingNearbyPlaces {
-                            ProgressView()
-                                .scaleEffect(0.7)
-                        }
                     }
                 }
+                .edgesIgnoringSafeArea(.all)
             }
-        } detail: {
-            Text("Select an item")
-        }
-        .sheet(isPresented: $showNearbyPlaces) {
-            RecommendedPlacesView(places: nearbyPlaces)
+            .navigationTitle("Nearby Places Map")
+            .task {
+                locationManager.requestLocation()
+                isLoadingNearbyPlaces = true
+                defer { isLoadingNearbyPlaces = false }
+                do {
+                    // Wait briefly for location update
+                    try await Task.sleep(nanoseconds: 1_000_000_000)
+                    var region: MKCoordinateRegion
+                    if let userLocation = locationManager.location?.coordinate {
+                        region = MKCoordinateRegion(center: userLocation, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+                        cameraPosition = .region(region)
+                    } else if let currentRegion = cameraPosition.region {
+                        region = currentRegion
+                    } else {
+                        // fallback
+                        region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 35.681236, longitude: 139.767125), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+                    }
+                    let results = try await NearbyRecommendationsIntent.perform(())
+                    nearbyPlaces = results.map { recommended in
+                        RecommendedPlace(
+                            name: recommended.name,
+                            detail: recommended.detail,
+                            latitude: recommended.latitude,
+                            longitude: recommended.longitude
+                        )
+                    }
+                } catch {
+                    print("Failed to get recommendations: \(error)")
+                }
+            }
+            .sheet(isPresented: Binding.constant(!nearbyPlaces.isEmpty)) {
+                RecommendedPlacesView(places: nearbyPlaces)
+                    .presentationDetents([.medium, .large])
+            }
+            .sheet(isPresented: $showPlaceDetail) {
+                if let place = selectedPlace {
+                    PlaceDetailSheet(place: place, onSaveFavorite: {
+                        saveFavorite(place: place)
+                        showPlaceDetail = false
+                    })
+                }
+            }
         }
     }
 
-    private func addItem() {
+    private func saveFavorite(place: RecommendedPlace) {
         withAnimation {
             let newItem = Item(timestamp: Date())
             modelContext.insert(newItem)
         }
     }
+}
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+struct PlaceDetailSheet: View {
+    let place: RecommendedPlace
+    var onSaveFavorite: () -> Void
+
+    var body: some View {
+        NavigationView {
+            VStack(alignment: .leading, spacing: 20) {
+                Text(place.name)
+                    .font(.title)
+                    .bold()
+                Text(place.detail)
+                    .font(.body)
+                Spacer()
+                Button {
+                    onSaveFavorite()
+                } label: {
+                    Label("お気に入り保存", systemImage: "star.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding()
+            .navigationTitle("詳細")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("閉じる") {
+                        onSaveFavorite()
+                    }
+                }
             }
         }
     }
