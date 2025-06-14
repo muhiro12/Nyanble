@@ -42,11 +42,13 @@ struct ContentView: View {
                 }
                 ToolbarItem {
                     Button("Nearby Places") {
-                        do {
-                            nearbyPlaces = try NearbyRecommendationsIntent.perform(())
-                            showNearbyPlaces = true
-                        } catch {
-                            print("Failed to get recommendations: \(error)")
+                        Task {
+                            do {
+                                nearbyPlaces = try await NearbyRecommendationsIntent.perform(())
+                                showNearbyPlaces = true
+                            } catch {
+                                print("Failed to get recommendations: \(error)")
+                            }
                         }
                     }
                 }
