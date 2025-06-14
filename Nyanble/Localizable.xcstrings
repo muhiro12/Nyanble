@@ -21,12 +21,62 @@
         }
       }
     },
+    "Enter latitude" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緯度を入力してください"
+          }
+        }
+      }
+    },
+    "Enter longitude" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "経度を入力してください"
+          }
+        }
+      }
+    },
+    "Here are some places near that location." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "その場所の近くはこちらです。"
+          }
+        }
+      }
+    },
     "Here are some places near you." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "近くの場所はこちらです。"
+          }
+        }
+      }
+    },
+    "Latitude" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "緯度"
+          }
+        }
+      }
+    },
+    "Longitude" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "経度"
           }
         }
       }
@@ -77,6 +127,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "近くのおすすめを表示"
+          }
+        }
+      }
+    },
+    "Show recommendations for ${latitude}, ${longitude}" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "（${latitude}, ${longitude}）付近のおすすめを表示"
+          }
+        }
+      }
+    },
+    "Show Recommendations For Location" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定位置のおすすめを表示"
           }
         }
       }
