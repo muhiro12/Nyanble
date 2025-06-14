@@ -3,8 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
+        <array>
+                <string>remote-notification</string>
+        </array>
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>このアプリは近くのスポットを提案するために位置情報を利用します。</string>
 </dict>
 </plist>
