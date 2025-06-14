@@ -68,12 +68,10 @@ struct MainMapView: View {
                     selectedPlace = place
                 },
                 updateAction: {
-                    Task {
-                        guard let coordinate = cameraPosition.region?.center else {
-                            return
-                        }
-                        await fetchRecommendedPlaces(for: coordinate)
+                    guard let coordinate = cameraPosition.region?.center else {
+                        return
                     }
+                    await fetchRecommendedPlaces(for: coordinate)
                 }
             )
             .presentationDetents([.fraction(0.3), .fraction(0.8)])

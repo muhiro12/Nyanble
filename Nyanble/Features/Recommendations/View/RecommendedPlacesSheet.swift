@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct RecommendedPlacesSheet: View {
+    @State private var isUpdating = false
     let recommendedPlaces: [RecommendedPlace]
     let selectPlace: (RecommendedPlace) -> Void
-    let updateAction: () -> Void
+    let updateAction: () async -> Void
 
     var body: some View {
         NavigationStack {
@@ -20,9 +21,20 @@ struct RecommendedPlacesSheet: View {
             .navigationTitle("Recommended Places")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: updateAction) {
-                        Label("Update", systemImage: "arrow.clockwise")
+                    Button(action: {
+                        isUpdating = true
+                        Task {
+                            await updateAction()
+                            isUpdating = false
+                        }
+                    }) {
+                        if isUpdating {
+                            ProgressView()
+                        } else {
+                            Label("Update", systemImage: "arrow.clockwise")
+                        }
                     }
+                    .disabled(isUpdating)
                 }
             }
         }
@@ -36,6 +48,8 @@ struct RecommendedPlacesSheet: View {
             RecommendedPlace(name: "Neko Shrine", detail: "A small shrine dedicated to cats", latitude: 35.6895, longitude: 139.6917)
         ],
         selectPlace: { _ in },
-        updateAction: { }
+        updateAction: {
+            try? await Task.sleep(for: .seconds(1))
+        }
     )
 }
