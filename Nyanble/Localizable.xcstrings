@@ -31,6 +31,16 @@
         }
       }
     },
+    "Recommended Place" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "おすすめの場所"
+          }
+        }
+      }
+    },
     "Reload" : {
       "localizations" : {
         "ja" : {

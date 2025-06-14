@@ -39,11 +39,9 @@ struct NearbyRecommendationsIntent: AppIntent, IntentPerformer {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        let places = try await Self.perform(())
-
-        return .result(
-            dialog: "Here are some places near you.",
-            view: RecommendedPlacesView(places: places)
+        .result(
+            value: try await Self.perform(()),
+            dialog: "Here are some places near you."
         )
     }
 }
