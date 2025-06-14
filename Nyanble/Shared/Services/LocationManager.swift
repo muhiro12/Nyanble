@@ -1,10 +1,10 @@
-import Foundation
-import CoreLocation
 import Combine
+import CoreLocation
+import Foundation
 
 /// LocationManager is a robust location provider that integrates the functionality of the previous LocationFetcher,
 /// allowing both continuous location updates and single-shot location fetches.
-/// 
+///
 /// - The `fetchCurrentLocation()` method provides a suspendable way to get the current location once,
 ///   suitable for single-use location requests.
 /// - It also handles location authorization and fallback coordinates internally,
@@ -18,7 +18,7 @@ final class LocationManager: NSObject, ObservableObject {
     private let manager = CLLocationManager()
     private var continuation: CheckedContinuation<CLLocation, Never>?
     private var streamContinuations: [UUID: AsyncStream<CLLocation>.Continuation] = [:]
-    
+
     private let fallbackLocation = CLLocation(latitude: 35.6812, longitude: 139.7671) // Tokyo Station fallback
 
     override init() {
@@ -32,7 +32,7 @@ final class LocationManager: NSObject, ObservableObject {
     /// It integrates the previous LocationFetcher’s functionality by:
     /// - Handling authorization requests as needed.
     /// - Returning a fallback location (Tokyo Station) if the location cannot be determined.
-    /// 
+    ///
     /// This makes it suitable for single-shot location requests where continuous monitoring is not required.
     ///
     /// - Returns: The current CLLocation, or a fallback location if unavailable.
@@ -74,7 +74,7 @@ final class LocationManager: NSObject, ObservableObject {
 }
 
 extension LocationManager: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let loc = locations.first ?? fallbackLocation
         location = loc
         continuation?.resume(returning: loc)
@@ -84,7 +84,7 @@ extension LocationManager: CLLocationManagerDelegate {
         }
     }
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    func locationManager(_: CLLocationManager, didFailWithError error: Error) {
         // On failure, resume with fallback location for single-shot fetches
         continuation?.resume(returning: fallbackLocation)
         continuation = nil

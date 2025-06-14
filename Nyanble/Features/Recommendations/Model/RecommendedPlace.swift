@@ -27,7 +27,7 @@ struct RecommendedPlace: AppEntity {
 }
 
 struct RecommendedPlaceQuery: EntityQuery {
-    func entities(for identifiers: [RecommendedPlace.ID]) throws -> [RecommendedPlace] {
+    func entities(for _: [RecommendedPlace.ID]) throws -> [RecommendedPlace] {
         []
     }
 

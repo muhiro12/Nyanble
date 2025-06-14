@@ -5,14 +5,14 @@
 //  Created by Hiromu Nakano on 2025/06/14.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct NyanbleApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Item.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

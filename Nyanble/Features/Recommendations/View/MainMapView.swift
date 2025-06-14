@@ -1,6 +1,6 @@
-import SwiftUI
-import MapKit
 import CoreLocation
+import MapKit
+import SwiftUI
 
 struct MainMapView: View {
     @StateObject private var locationManager = LocationManager()
@@ -28,7 +28,7 @@ struct MainMapView: View {
                     }
                 }
             }
-            .onChange(of: locationManager.location) { oldLocation, newLocation in
+            .onChange(of: locationManager.location) { _, newLocation in
                 guard let loc = newLocation else { return }
                 let centerCoordinate = loc.coordinate
                 cameraPosition = .region(MKCoordinateRegion(
@@ -113,4 +113,3 @@ extension MainMapView {
 #Preview {
     MainMapView()
 }
-
