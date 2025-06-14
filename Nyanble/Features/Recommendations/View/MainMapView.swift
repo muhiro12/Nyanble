@@ -40,7 +40,13 @@ struct MainMapView: View {
                 }
             }
             .task {
-                locationManager.requestLocation()
+                let loc = await locationManager.fetchCurrentLocation()
+                let centerCoordinate = loc.coordinate
+                cameraPosition = .region(MKCoordinateRegion(
+                    center: centerCoordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                ))
+                await fetchRecommendedPlaces(for: centerCoordinate)
             }
             .ignoresSafeArea()
         }
@@ -75,7 +81,15 @@ struct MainMapView: View {
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
-                    locationManager.requestLocation()
+                    Task {
+                        let loc = await locationManager.fetchCurrentLocation()
+                        let centerCoordinate = loc.coordinate
+                        cameraPosition = .region(MKCoordinateRegion(
+                            center: centerCoordinate,
+                            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                        ))
+                        await fetchRecommendedPlaces(for: centerCoordinate)
+                    }
                 } label: {
                     Label("Update Location", systemImage: "location")
                 }
@@ -99,3 +113,4 @@ extension MainMapView {
 #Preview {
     MainMapView()
 }
+
