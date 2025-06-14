@@ -27,39 +27,54 @@ struct MainMapView: View {
                     }
                 }
             }
-            .onAppear {
+            .task {
+                let centerCoordinate: CLLocationCoordinate2D
                 if let loc = locationManager.location {
-                    cameraPosition = .region(MKCoordinateRegion(
-                        center: loc.coordinate,
-                        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-                    ))
+                    centerCoordinate = loc.coordinate
+                } else {
+                    centerCoordinate = CLLocationCoordinate2D(latitude: 35.681236, longitude: 139.767125)
                 }
-                // TODO: 最初のおすすめ場所取得などをここに
+                cameraPosition = .region(MKCoordinateRegion(
+                    center: centerCoordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                ))
+                await fetchRecommendedPlaces(for: centerCoordinate)
             }
             .ignoresSafeArea()
-
-            if let selected = selectedPlace {
-                VStack {
-                    Spacer()
-                    VStack(spacing: 8) {
-                        Text(selected.name)
-                            .font(.headline)
-                        Text(selected.detail)
-                            .font(.subheadline)
-                        Button("Save") {
-                            // TODO: SwiftData保存処理
-                        }
-                        Button("Close") {
-                            selectedPlace = nil
-                        }
+        }
+        .sheet(isPresented: .constant(true)) {
+            RecommendedPlacesSheet(
+                recommendedPlaces: recommendedPlaces,
+                selectPlace: { place in selectedPlace = place },
+                updateAction: {
+                    let centerCoordinate: CLLocationCoordinate2D
+                    if let loc = locationManager.location {
+                        centerCoordinate = loc.coordinate
+                    } else {
+                        centerCoordinate = CLLocationCoordinate2D(latitude: 35.681236, longitude: 139.767125)
                     }
-                    .padding()
-                    .background(.thinMaterial)
-                    .cornerRadius(12)
-                    .shadow(radius: 6)
+                    Task {
+                        await fetchRecommendedPlaces(for: centerCoordinate)
+                    }
                 }
-                .padding()
-            }
+            )
+            .presentationDetents([.fraction(0.12), .fraction(0.32), .fraction(0.7)])
+            .interactiveDismissDisabled()
+        }
+        // selectedPlaceをバインディングした.sheetを追加し、詳細ビューを表示する
+        .sheet(item: $selectedPlace) { place in
+            RecommendedPlaceDetailView(place: place)
+        }
+    }
+}
+
+extension MainMapView {
+    func fetchRecommendedPlaces(for coordinate: CLLocationCoordinate2D) async {
+        do {
+            let results = try await RecommendationsIntent.perform((latitude: coordinate.latitude, longitude: coordinate.longitude))
+            recommendedPlaces = results
+        } catch {
+            print("Intentによるおすすめ場所取得に失敗: \(error)")
         }
     }
 }
