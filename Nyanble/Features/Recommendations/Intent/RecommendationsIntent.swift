@@ -1,5 +1,5 @@
 //
-//  RecommendationsForLocationIntent.swift
+//  RecommendationsIntent.swift
 //  Nyanble
 //
 //  Created by Hiromu Nakano on 2025/06/14.
@@ -9,7 +9,7 @@ import AppIntents
 import CoreLocation
 import FoundationModels
 
-struct RecommendationsForLocationIntent: AppIntent, IntentPerformer {
+struct RecommendationsIntent: AppIntent, IntentPerformer {
     typealias Input = (latitude: Double, longitude: Double)
     typealias Output = [RecommendedPlace]
 
