@@ -16,13 +16,9 @@ struct NearbyRecommendationsIntent: AppIntent, IntentPerformer {
     static let title: LocalizedStringResource = "Show Nearby Recommendations"
     static let supportedModes: IntentModes = .foreground
 
-    static func fetchLocation() async -> CLLocation {
-        let fetcher = LocationFetcher()
-        return await fetcher.fetch()
-    }
-
     static func perform(_ input: Input) async throws -> Output {
-        let location = await fetchLocation()
+        let fetcher = LocationFetcher()
+        let location = await fetcher.fetch()
         return try await RecommendationsIntent.perform((latitude: location.coordinate.latitude, longitude: location.coordinate.longitude))
     }
 
