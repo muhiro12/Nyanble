@@ -1,6 +1,6 @@
 import Foundation
 
-struct RecommendationQuery {
+struct RecommendationsIntentInput {
     var latitude: Double?
     var longitude: Double?
     var name: String?

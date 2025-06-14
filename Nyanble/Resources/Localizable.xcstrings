@@ -33,22 +33,22 @@
         }
       }
     },
-    "Enter longitude" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "経度を入力してください"
-          }
-        }
-      }
-    },
     "Enter location name" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "場所の名称を入力してください"
+          }
+        }
+      }
+    },
+    "Enter longitude" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "経度を入力してください"
           }
         }
       }
@@ -83,22 +83,22 @@
         }
       }
     },
-    "Longitude" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "経度"
-          }
-        }
-      }
-    },
     "Location Name" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "地点名"
+          }
+        }
+      }
+    },
+    "Longitude" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "経度"
           }
         }
       }
@@ -162,7 +162,11 @@
     "Show Places List" : {
 
     },
+    "Show recommendations" : {
+
+    },
     "Show recommendations for ${name}, ${latitude}, ${longitude}" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {

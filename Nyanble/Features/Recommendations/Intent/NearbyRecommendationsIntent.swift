@@ -20,7 +20,7 @@ struct NearbyRecommendationsIntent: AppIntent, IntentPerformer {
         let fetcher = LocationFetcher()
         let location = await fetcher.fetch()
         return try await RecommendationsIntent.perform(
-            RecommendationQuery(latitude: location.coordinate.latitude,
+            RecommendationsIntentInput(latitude: location.coordinate.latitude,
                                 longitude: location.coordinate.longitude)
         )
     }

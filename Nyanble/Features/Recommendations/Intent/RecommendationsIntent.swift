@@ -10,7 +10,7 @@ import CoreLocation
 import FoundationModels
 
 struct RecommendationsIntent: AppIntent, IntentPerformer {
-    typealias Input = RecommendationQuery
+    typealias Input = RecommendationsIntentInput
     typealias Output = [RecommendedPlace]
 
     @Parameter(
@@ -35,7 +35,7 @@ struct RecommendationsIntent: AppIntent, IntentPerformer {
     static let supportedModes: IntentModes = .foreground
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Show recommendations", \(\.$name), \(\.$latitude), \(\.$longitude))
+        Summary("Show recommendations")
     }
 
     static func perform(_ input: Input) async throws -> Output {
@@ -75,7 +75,7 @@ struct RecommendationsIntent: AppIntent, IntentPerformer {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        let results = try await Self.perform(RecommendationQuery(latitude: latitude, longitude: longitude, name: name))
+        let results = try await Self.perform(RecommendationsIntentInput(latitude: latitude, longitude: longitude, name: name))
         return .result(
             value: results,
             dialog: "Here are some places near that location."
