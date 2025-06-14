@@ -51,7 +51,7 @@ struct ContentView: View {
                     MainMapView()
                 }
             }
-            .navigationTitle(screenTitle())
+            .navigationTitle(Text(screenTitle()))
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
                     Button {
@@ -78,7 +78,7 @@ struct ContentView: View {
                         Button {
                             locationManager.requestLocation()
                         } label: {
-                            Label("現在地更新", systemImage: "location")
+                            Label("Update Location", systemImage: "location")
                         }
                     } else if selectedScreen == 1 {
                         Button {
@@ -86,7 +86,7 @@ struct ContentView: View {
                                 await reloadNearbyPlaces()
                             }
                         } label: {
-                            Label("リロード", systemImage: "arrow.clockwise")
+                            Label("Reload", systemImage: "arrow.clockwise")
                         }
                     }
                 }
@@ -109,9 +109,9 @@ struct ContentView: View {
 
     private func screenTitle() -> String {
         switch selectedScreen {
-        case 0: return "メインマップ"
-        case 1: return "おすすめ場所マップ"
-        case 2: return "おすすめリスト"
+        case 0: return "Main Map"
+        case 1: return "Recommended Map"
+        case 2: return "Recommended List"
         default: return "Nyanble"
         }
     }

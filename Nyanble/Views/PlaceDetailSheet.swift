@@ -23,16 +23,16 @@ struct PlaceDetailSheet: View {
                 Button {
                     onSaveFavorite()
                 } label: {
-                    Label("お気に入り保存", systemImage: "star.fill")
+                    Label("Save to Favorites", systemImage: "star.fill")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
             }
             .padding()
-            .navigationTitle("詳細")
+            .navigationTitle("Details")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("閉じる") {
+                    Button("Close") {
                         onSaveFavorite()
                     }
                 }

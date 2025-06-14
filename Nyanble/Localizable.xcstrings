@@ -1,0 +1,86 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Close" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "閉じる"
+          }
+        }
+      }
+    },
+    "Details" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "詳細"
+          }
+        }
+      }
+    },
+    "Here are some places near you." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "近くの場所はこちらです。"
+          }
+        }
+      }
+    },
+    "Reload" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再読み込み"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存"
+          }
+        }
+      }
+    },
+    "Save to Favorites" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りに保存"
+          }
+        }
+      }
+    },
+    "Show Nearby Recommendations" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "近くのおすすめを表示"
+          }
+        }
+      }
+    },
+    "Update Location" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報を更新"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

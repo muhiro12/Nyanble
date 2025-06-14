@@ -46,10 +46,10 @@ struct MainMapView: View {
                             .font(.headline)
                         Text(selected.detail)
                             .font(.subheadline)
-                        Button("保存") {
+                        Button("Save") {
                             // TODO: SwiftData保存処理
                         }
-                        Button("閉じる") {
+                        Button("Close") {
                             selectedPlace = nil
                         }
                     }
