@@ -49,6 +49,16 @@ struct MainMapView: View {
                 await fetchRecommendedPlaces(for: centerCoordinate)
             }
             .ignoresSafeArea()
+            .onMapCameraChange { context in
+                if let span = cameraPosition.region?.span {
+                    let region = MKCoordinateRegion(center: context.camera.centerCoordinate, span: span)
+                    cameraPosition = .region(region)
+                } else {
+                    // fallback span if cameraPosition is not a region
+                    let region = MKCoordinateRegion(center: context.camera.centerCoordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+                    cameraPosition = .region(region)
+                }
+            }
         }
         .sheet(isPresented: $isSheetPresented) {
             RecommendedPlacesSheet(
