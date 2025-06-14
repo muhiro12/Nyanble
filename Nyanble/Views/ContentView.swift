@@ -122,24 +122,25 @@ struct ContentView: View {
         do {
             locationManager.requestLocation()
             try await Task.sleep(nanoseconds: 1_000_000_000)
+            let latitude: Double
+            let longitude: Double
             var region: MKCoordinateRegion
             if let userLocation = locationManager.location?.coordinate {
+                latitude = userLocation.latitude
+                longitude = userLocation.longitude
                 region = MKCoordinateRegion(center: userLocation, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
                 cameraPosition = .region(region)
             } else if let currentRegion = cameraPosition.region {
+                latitude = currentRegion.center.latitude
+                longitude = currentRegion.center.longitude
                 region = currentRegion
             } else {
-                region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 35.681236, longitude: 139.767125), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+                latitude = 35.681236
+                longitude = 139.767125
+                region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
             }
-            let results = try await NearbyRecommendationsIntent.perform(())
-            nearbyPlaces = results.map { recommended in
-                RecommendedPlace(
-                    name: recommended.name,
-                    detail: recommended.detail,
-                    latitude: recommended.latitude,
-                    longitude: recommended.longitude
-                )
-            }
+            let results = try await RecommendationsIntent.perform((latitude: latitude, longitude: longitude))
+            nearbyPlaces = results
         } catch {
             print("Failed to get recommendations: \(error)")
         }
