@@ -58,20 +58,23 @@ struct RecommendationsIntent: AppIntent, IntentPerformer {
         let language = Locale.current.localizedString(forLanguageCode: Locale.current.language.languageCode?.identifier ?? "en") ?? "English"
         let conditionText = conditions.joined(separator: " ")
         let prompt = """
-        Suggest three interesting places \(conditionText) for today's outing. For each, provide a short name, a short description, and the accurate latitude and longitude (as real, searchable locations in the world). Respond in \(language).
+        List three interesting places \(conditionText). \
+        Return only JSON of the form:
+        {
+          \"places\": [
+            { \"name\": \"string\", \"detail\": \"string\" }
+          ]
+        }
+        Respond in \(language).
         """
         let response = try await session.respond(
             to: prompt,
             generating: AIRecommendations.self
         )
-        return response.content.places.map {
-            RecommendedPlace(
-                name: $0.name,
-                detail: $0.detail,
-                latitude: $0.latitude,
-                longitude: $0.longitude
-            )
-        }
+        let origin = CLLocation(latitude: input.latitude ?? 0,
+                                longitude: input.longitude ?? 0)
+        return await PlaceResolver().resolvePlaces(response.content.places,
+                                                   near: origin)
     }
 
     @MainActor
